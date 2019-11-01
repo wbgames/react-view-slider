@@ -23,11 +23,13 @@ export type DefaultProps = {
   viewportStyle: Object,
   rtl: boolean,
   spacing: number,
+  viewOffset: number,
 }
 
 export type Props = {
   activeView: number,
   numViews: number,
+  viewOffset?: number,
   renderView: (props: ViewProps) => React.Node,
   keepViewsMounted: boolean,
   animateHeight: boolean,
@@ -80,6 +82,7 @@ export default class ViewSlider extends React.Component<Props, State> {
     viewportStyle: {},
     rtl: false,
     spacing: 1,
+    viewOffset: 0,
   }
   state: State = {
     height: undefined,
@@ -182,6 +185,7 @@ export default class ViewSlider extends React.Component<Props, State> {
       rtl,
       viewStyle,
       innerViewWrapperStyle,
+      viewOffset,
     } = this.props
     const { activeView, transitioning } = this.state
 
@@ -189,8 +193,8 @@ export default class ViewSlider extends React.Component<Props, State> {
     if (fillParent) {
       Object.assign(style, fillStyle)
       style.overflow = 'auto'
-      if (rtl) style.right = `${index * spacing * 100}%`
-      else style.left = `${index * spacing * 100}%`
+      if (rtl) style.right = `${(index + viewOffset) * spacing * 100}%`
+      else style.left = `${(index + viewOffset) * spacing * 100}%`
     } else if (index > 0) {
       if (rtl) style.marginRight = `${(spacing - 1) * 100}%`
       else style.marginLeft = `${(spacing - 1) * 100}%`
@@ -252,6 +256,7 @@ export default class ViewSlider extends React.Component<Props, State> {
       keepViewsMounted,
       rtl,
       spacing,
+      viewOffset,
     } = this.props
     const animateHeight = this.animateHeight()
     const { activeView, height, transitioning } = this.state
@@ -267,7 +272,9 @@ export default class ViewSlider extends React.Component<Props, State> {
 
     const finalViewportStyle = {
       position: 'relative',
-      transform: `translateX(${activeView * spacing * (rtl ? 100 : -100)}%)`,
+      transform: `translateX(${(activeView + viewOffset) *
+        spacing *
+        (rtl ? 100 : -100)}%)`,
       whiteSpace: 'nowrap',
       minHeight: '100%',
       direction: rtl ? 'rtl' : 'ltr',

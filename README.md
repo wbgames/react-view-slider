@@ -155,6 +155,10 @@ The `ref` to pass to the root `<div>` element rendered by `ViewSlider`.
 
 The `ref` to pass to the viewport `<div>` element rendered inside the root `<div>` by `ViewSlider`.
 
+##### `viewOffset: number` (default: `500`)
+
+Number of views to "offset" the slider by. Used in place of instant transitions.
+
 ## `SimpleViewSlider`
 
 This is a wrapper for `ViewSlider` that takes a single child element. It renders the `ViewSlider` with the child's key
