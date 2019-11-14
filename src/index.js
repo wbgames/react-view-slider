@@ -195,6 +195,9 @@ export default class ViewSlider extends React.Component<Props, State> {
       style.overflow = 'auto'
       if (rtl) style.right = `${(index + viewOffset) * spacing * 100}%`
       else style.left = `${(index + viewOffset) * spacing * 100}%`
+    } else if (index === 0) {
+      if (rtl) style.marginRight = `${viewOffset * spacing * 100}%`
+      else style.marginLeft = `${viewOffset * spacing * 100}%`
     } else if (index > 0) {
       if (rtl) style.marginRight = `${(spacing - 1) * 100}%`
       else style.marginLeft = `${(spacing - 1) * 100}%`
