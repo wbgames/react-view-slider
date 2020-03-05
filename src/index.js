@@ -106,6 +106,15 @@ export default class ViewSlider extends React.Component<Props, State> {
     this.timeouts[name] = setTimeout(callback, delay)
   }
 
+  componentDidMount() {
+    // Measure height on mount
+    if (!this.state.height) {
+      this.setState({
+        height: this.measureHeight(this.views[this.props.activeView]),
+      })
+    }
+  }
+
   componentDidUpdate() {
     const { activeView, transitionDuration, keepViewsMounted } = this.props
     let newState: ?$Shape<State>
@@ -153,13 +162,22 @@ export default class ViewSlider extends React.Component<Props, State> {
 
   onTransitionEnd = (event?: Event) => {
     // ignore transitionend events from deeper components
-    if (event && event.target !== this.viewport) return
-    // phase 0: unset height and disable transitions
-    this.setState({
-      height: undefined,
+    if (event && event.target !== this.viewport) {
+      return
+    } // phase 0: unset height and disable transitions
+
+    // - Preserve height that is animated to once transition is done
+    this.setState(prevState => ({
+      height: this.measureHeight(this.views[prevState.activeView]),
       prevActiveView: null,
       transitioning: false,
-    })
+    }))
+
+    // - Optionally calls a custom callback when done transitioning
+    const { onTransitionEndCallback } = this.props
+    if (onTransitionEndCallback) {
+      onTransitionEndCallback()
+    }
   }
 
   componentWillUnmount() {
@@ -230,8 +248,11 @@ export default class ViewSlider extends React.Component<Props, State> {
   }
 
   animateHeight = (): boolean => {
-    const { animateHeight, fillParent, keepViewsMounted } = this.props
-    return animateHeight && !fillParent && !keepViewsMounted
+    // Allow animated height even if keepViewsMounted is true
+    const { animateHeight } = this.props
+    return animateHeight
+    // const { animateHeight, fillParent, keepViewsMounted } = this.props
+    // return animateHeight && !fillParent && !keepViewsMounted
   }
 
   rootRef = (node: ?React.ElementRef<'div'>) => {
